@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Body Fat Prediction</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode .form-container {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .btn-primary {
+            width: 100%;
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Arial', sans-serif;
+            color: #007bff;
+        }
+        .dark-mode h1 {
+            color: #80d4ff;
+        }
+        .control-panel {
+            display: flex;
+            justify-content: end;
+            gap: 10px;
+            margin: 15px;
+        }
+        .dropdown-menu {
+            width: 100%;
+        }
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .dark-mode .result-container {
+            background-color: #444;
+            border-color: #666;
+        }
+        .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+        .dark-mode .modal-content {
+            background-color: #444;
+            color: #fff;
+        }
+        .modal-header, .modal-body, .modal-footer {
+            border: none;
+        }
+        .theme-toggle-button {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel">
+        <select class="form-select" id="language" name="language" style="width: 150px;">
+            <option value="en">English</option>
+            <option value="vi">Tiếng Việt</option>
+        </select>
+        <button id="theme-toggle" class="btn btn-secondary theme-toggle-button">
+            <i id="theme-icon" class="fas fa-sun"></i>
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="form-container">
+                    <h1 id="form-title">Body Fat Prediction</h1>
+                    <form id="prediction-form">
+                        <!-- First Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Density" class="form-label" id="density-label">Density</label>
+                                <input type="text" class="form-control" id="density" name="Density" placeholder="Density" value="{{ old_values['Density'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Age" class="form-label" id="age-label">Age</label>
+                                <input type="text" class="form-control" id="age" name="Age" placeholder="Age" value="{{ old_values['Age'] }}">
+                            </div>
+                        </div>
+                        <!-- Second Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Weight" class="form-label" id="weight-label">Weight (in kg)</label>
+                                <input type="text" class="form-control" id="weight" name="Weight" placeholder="Weight" value="{{ old_values['Weight'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Height" class="form-label" id="height-label">Height (in cm)</label>
+                                <input type="text" class="form-control" id="height" name="Height" placeholder="Height" value="{{ old_values['Height'] }}">
+                            </div>
+                        </div>
+                        <!-- Third Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Neck" class="form-label" id="neck-label">Neck Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="neck" name="Neck" placeholder="Neck Circumference" value="{{ old_values['Neck'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Chest" class="form-label" id="chest-label">Chest Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="chest" name="Chest" placeholder="Chest Circumference" value="{{ old_values['Chest'] }}">
+                            </div>
+                        </div>
+                        <!-- Fourth Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Abdomen" class="form-label" id="abdomen-label">Abdomen Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="abdomen" name="Abdomen" placeholder="Abdomen Circumference" value="{{ old_values['Abdomen'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Hip" class="form-label" id="hip-label">Hip Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="hip" name="Hip" placeholder="Hip Circumference" value="{{ old_values['Hip'] }}">
+                            </div>
+                        </div>
+                        <!-- Fifth Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Thigh" class="form-label" id="thigh-label">Thigh Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="thigh" name="Thigh" placeholder="Thigh Circumference" value="{{ old_values['Thigh'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Knee" class="form-label" id="knee-label">Knee Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="knee" name="Knee" placeholder="Knee Circumference" value="{{ old_values['Knee'] }}">
+                            </div>
+                        </div>
+                        <!-- Sixth Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Ankle" class="form-label" id="ankle-label">Ankle Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="ankle" name="Ankle" placeholder="Ankle Circumference" value="{{ old_values['Ankle'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Biceps" class="form-label" id="biceps-label">Biceps Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="biceps" name="Biceps" placeholder="Biceps Circumference" value="{{ old_values['Biceps'] }}">
+                            </div>
+                        </div>
+                        <!-- Seventh Row -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="Forearm" class="form-label" id="forearm-label">Forearm Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="forearm" name="Forearm" placeholder="Forearm Circumference" value="{{ old_values['Forearm'] }}">
+                            </div>
+                            <div class="col">
+                                <label for="Wrist" class="form-label" id="wrist-label">Wrist Circumference (in cm)</label>
+                                <input type="text" class="form-control" id="wrist" name="Wrist" placeholder="Wrist Circumference" value="{{ old_values['Wrist'] }}">
+                            </div>
+                        </div>
+                        <button type="submit" id="submit-button" class="btn btn-primary">Predict</button>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Modal Structure -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalLabel">Prediction Result</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-body-content">The prediction will be displayed here.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="close-button" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const translations = {
+            en: {
+                "page-title": "Body Fat Prediction",
+                "form-title": "Body Fat Prediction",
+                "density-label": "Density determined from underwater weighing",
+                "age-label": "Age",
+                "weight-label": "Weight (in kg)",
+                "height-label": "Height (in cm)",
+                "neck-label": "Neck Circumference (in cm)",
+                "chest-label": "Chest Circumference (in cm)",
+                "abdomen-label": "Abdomen Circumference (in cm)",
+                "hip-label": "Hip Circumference (in cm)",
+                "thigh-label": "Thigh Circumference (in cm)",
+                "knee-label": "Knee Circumference (in cm)",
+                "ankle-label": "Ankle Circumference (in cm)",
+                "biceps-label": "Biceps Circumference (in cm)",
+                "forearm-label": "Forearm Circumference (in cm)",
+                "wrist-label": "Wrist Circumference (in cm)",
+                "submit-button": "Predict",
+                "result-title": "Prediction Result",
+                "result-message": "The prediction will be displayed here.",
+                "close-button": "Close",
+                "result-title": "Prediction Result",
+                "error-title": "Error",
+                "error-message": "Error",
+                "general-error": "An error occurred. Please try again later."
+            },
+            vi: {
+                "page-title": "Dự Đoán Mỡ Cơ Thể",
+                "form-title": "Dự Đoán Mỡ Cơ Thể",
+                "density-label": "Mật độ (được xác định từ việc cân thủy tĩnh)",
+                "age-label": "Tuổi",
+                "weight-label": "Cân nặng (kg)",
+                "height-label": "Chiều cao (cm)",
+                "neck-label": "Vòng cổ (cm)",
+                "chest-label": "Vòng ngực (cm)",
+                "abdomen-label": "Vòng bụng (cm)",
+                "hip-label": "Vòng hông (cm)",
+                "thigh-label": "Vòng đùi (cm)",
+                "knee-label": "Vòng gối (cm)",
+                "ankle-label": "Vòng mắt cá chân (cm)",
+                "biceps-label": "Vòng cánh tay (cm)",
+                "forearm-label": "Vòng cẳng tay (cm)",
+                "wrist-label": "Vòng cổ tay (cm)",
+                "submit-button": "Dự Đoán",
+                "result-title": "Kết Quả Dự Đoán",
+                "result-message": "Kết quả dự đoán sẽ được hiển thị ở đây.",
+                "close-button": "Đóng",
+                "result-title": "Kết Quả Dự Đoán",
+                "error-title": "Lỗi",
+                "error-message": "Lỗi",
+                "general-error": "Đã xảy ra lỗi. Vui lòng thử lại sau."
+            }
+        };
+        
+        const languageSelect = document.getElementById('language');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const form = document.getElementById('prediction-form');
+
+        languageSelect.addEventListener('change', (e) => {
+            const selectedLang = e.target.value;
+            updateTextContent(selectedLang);
+        });
+
+        themeToggle.addEventListener('click', () => {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            themeIcon.className = isDarkMode ? 'fas fa-moon' : 'fas fa-sun';
+            themeToggle.prepend(themeIcon); 
+        });
+
+        function updateTextContent(lang) {
+            document.getElementById('page-title').textContent = translations[lang]["page-title"];
+            document.getElementById('form-title').textContent = translations[lang]["form-title"];
+            document.getElementById('density-label').textContent = translations[lang]["density-label"];
+            document.getElementById('age-label').textContent = translations[lang]["age-label"];
+            document.getElementById('weight-label').textContent = translations[lang]["weight-label"];
+            document.getElementById('height-label').textContent = translations[lang]["height-label"];
+            document.getElementById('neck-label').textContent = translations[lang]["neck-label"];
+            document.getElementById('chest-label').textContent = translations[lang]["chest-label"];
+            document.getElementById('abdomen-label').textContent = translations[lang]["abdomen-label"];
+            document.getElementById('hip-label').textContent = translations[lang]["hip-label"];
+            document.getElementById('thigh-label').textContent = translations[lang]["thigh-label"];
+            document.getElementById('knee-label').textContent = translations[lang]["knee-label"];
+            document.getElementById('ankle-label').textContent = translations[lang]["ankle-label"];
+            document.getElementById('biceps-label').textContent = translations[lang]["biceps-label"];
+            document.getElementById('forearm-label').textContent = translations[lang]["forearm-label"];
+            document.getElementById('wrist-label').textContent = translations[lang]["wrist-label"];
+            document.getElementById('submit-button').textContent = translations[lang]["submit-button"];
+            document.getElementById('close-button').textContent = translations[lang]["close-button"];
+            
+            resultTitle.textContent = translations[lang]["result-title"];
+            resultMessage.textContent = translations[lang]["result-message"];
+
+        }
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); 
+    
+            const formData = new FormData(form);
+            fetch('/predict', { 
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json()) 
+            .then(data => {
+                if (data.error) { 
+                    showModal(translations[languageSelect.value]["error-title"], translations[languageSelect.value]["error-message"] + ": " + data.error);
+                } else {
+                    showModal(translations[languageSelect.value]["result-title"], data.prediction);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showModal(translations[languageSelect.value]["error-title"], translations[languageSelect.value]["general-error"]);
+            });
+        });
+    
+        function showModal(title, message) {
+            const selectedLang = languageSelect.value; // Get the current selected language
+            
+            // Set the modal title
+            document.getElementById('resultModalLabel').textContent = title;
+            
+            // Format the message based on the selected language
+            const formattedMessage = selectedLang === 'vi' 
+                ? `Tỷ lệ mỡ: ${message}%`
+                : `Body fat: ${message}%`;
+            
+            // Set the modal body content
+            document.getElementById('modal-body-content').textContent = formattedMessage;
+            
+            // Show the modal
+            const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+            resultModal.show();
+        }
+        
+ 
+    </script>
+</body>
+</html>
